@@ -102,7 +102,7 @@
       ctx.stroke();
     }
 
-    var ws = new WebSocket("ws://" + "rationally-enjoyed-cat.ngrok-free.app");
+    var ws = new WebSocket("wss://" + "rationally-enjoyed-cat.ngrok-free.app");
     ws.onmessage = function(event) {
       try {
         var data = JSON.parse(event.data);
