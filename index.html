@@ -5,21 +5,32 @@
   <title>Monitoring system</title>
   <style>
     :root {
-      --bg-color: #e0e5ec;
+      --bg-color: #e0e5ec25;
       --accent: #4a90e2;
     }
     body {
       font-family: sans-serif;
-      background: var(--bg-color);
+      background: linear-gradient(#000000a4,#000000a4), url(https://zeev-x.github.io/temprature/GusLC01bsAASBE3_waifu2x_noise3_scale4x[crop].png);
+      background-attachment: fixed;
+      background-position: center;
+      background-position-y: 35%;
+      background-position-x: 30%;
+      background-size: cover;
+      background-repeat: no-repeat;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
     }
+    h2 {
+      color: var(--accent);
+      text-shadow: 2px 2px 4px #000;
+      margin-bottom: 20px;
+    }
     .card {
       background: var(--bg-color);
       border-radius: 20px;
-      box-shadow: 10px 10px 30px #a3b1c6, -10px -10px 30px #ffffff;
+      box-shadow: 10px 10px 30px #a3b1c64f, -10px -10px 30px #ffffff4b;
       padding: 40px;
       text-align: center;
       width: 90%;
@@ -29,8 +40,8 @@
       width: 200px;
       height: 200px;
       border-radius: 50%;
-      background: conic-gradient(#ccc 0deg, #ccc 360deg);
-      box-shadow: inset 8px 8px 16px #a3b1c6, inset -8px -8px 16px #ffffff;
+      background: conic-gradient(#cccccc7c 0deg, #cccccc7c 360deg);
+      box-shadow: inset 8px 8px 16px #a3b1c681, inset -8px -8px 16px #ffffff75;
       position: relative;
       margin: 20px;
     }
@@ -43,7 +54,7 @@
     }
     canvas {
       margin-top: 40px;
-      background: #ccc;
+      background: #cccccc75;
       border-radius: 10px;
     }
   </style>
@@ -102,7 +113,7 @@
       ctx.stroke();
     }
 
-    var ws = new WebSocket("wss://" + "rationally-enjoyed-cat.ngrok-free.app");
+    var ws = new WebSocket("ws://" + "lilyane.ddns.net" + ":81");
     ws.onmessage = function(event) {
       try {
         var data = JSON.parse(event.data);
