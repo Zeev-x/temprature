@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Monitoring system</title>
+  <style>
+    :root {
+      --bg-color: #e0e5ec;
+      --accent: #4a90e2;
+    }
+    body {
+      font-family: sans-serif;
+      background: var(--bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: var(--bg-color);
+      border-radius: 20px;
+      box-shadow: 10px 10px 30px #a3b1c6, -10px -10px 30px #ffffff;
+      padding: 40px;
+      text-align: center;
+      width: 90%;
+      max-width: 800px;
+    }
+    .gauge {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: conic-gradient(#ccc 0deg, #ccc 360deg);
+      box-shadow: inset 8px 8px 16px #a3b1c6, inset -8px -8px 16px #ffffff;
+      position: relative;
+      margin: 20px;
+    }
+    .gauge-value {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 28px;
+    }
+    canvas {
+      margin-top: 40px;
+      background: #ccc;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Monitoring Suhu & Kelembapan</h2>
+    <div style="display:flex; flex-wrap:wrap; justify-content:center;">
+      <div class="gauge" id="gaugeSuhu"><div class="gauge-value" id="valSuhu">-- °C</div></div>
+      <div class="gauge" id="gaugeHum"><div class="gauge-value" id="valHum">-- %</div></div>
+    </div>
+    <canvas id="weatherChart" width="700" height="200"></canvas>
+  </div>
+
+  <script>
+    const MAX_POINTS = 50;
+    let suhuData = [], humData = [];
+    const canvas = document.getElementById('weatherChart');
+    const ctx = canvas.getContext('2d');
+
+    function updateGauge(id, value, max, color, suffix) {
+      const gauge = document.getElementById(id);
+      const percent = Math.min(Math.max(value / max, 0), 1);
+      const deg = percent * 360;
+      gauge.style.background = `conic-gradient(${color} 0deg ${deg}deg, #e0e0e0 ${deg}deg 360deg)`;
+      gauge.querySelector('.gauge-value').textContent = value.toFixed(1) + ' ' + suffix;
+    }
+
+    function drawGraph() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = "#ddd";
+      for (let i = 0; i <= 5; i++) {
+        let y = 190 - i * 36;
+        ctx.beginPath();
+        ctx.moveTo(40, y);
+        ctx.lineTo(690, y);
+        ctx.stroke();
+        ctx.fillStyle = "#333";
+        ctx.fillText(i * 20 + "%", 5, y + 4);
+      }
+      ctx.strokeStyle = "#ff4e42";
+      ctx.beginPath();
+      suhuData.forEach((val, i) => {
+        const x = 40 + (i * (650 / MAX_POINTS));
+        const y = 190 - (val * 3);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.strokeStyle = "#4287f5";
+      ctx.beginPath();
+      humData.forEach((val, i) => {
+        const x = 40 + (i * (650 / MAX_POINTS));
+        const y = 190 - (val * 1.5);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    }
+
+    var ws = new WebSocket("ws://" + "rationally-enjoyed-cat.ngrok-free.app");
+    ws.onmessage = function(event) {
+      try {
+        var data = JSON.parse(event.data);
+        updateGauge("gaugeSuhu", data.temp, 50, "#ff4e42", "°C");
+        updateGauge("gaugeHum", data.hum, 100, "#4287f5", "%");
+        suhuData.push(data.temp);
+        humData.push(data.hum);
+        if (suhuData.length > MAX_POINTS) suhuData.shift();
+        if (humData.length > MAX_POINTS) humData.shift();
+        drawGraph();
+      } catch (e) {
+        console.error("Data tidak valid:", event.data);
+      }
+    };
+  </script>
+</body>
+</html>
