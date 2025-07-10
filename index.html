@@ -113,7 +113,7 @@
       ctx.stroke();
     }
 
-    var ws = new WebSocket("ws://" + "lilyane.ddns.net" + ":81");
+    var ws = new WebSocket("wss://" + "rationally-enjoyed-cat.ngrok-free.app");
     ws.onmessage = function(event) {
       try {
         var data = JSON.parse(event.data);
